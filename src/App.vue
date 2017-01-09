@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <quiz></quiz>
+    <speech></speech>
   </div>
 </template>
 
 <script>
-import Quiz from './components/Quiz'
+import Speech from './components/Speech'
 
 export default {
   name: 'app',
   components: {
-    Quiz
+    Speech
   }
 }
 </script>
