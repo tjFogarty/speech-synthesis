@@ -7,6 +7,7 @@
 
     <transition name="fade" v-if="!isLoading">
       <div class="quiz-container">
+
         <form @submit.prevent="greet">
           <h1>Speech Example</h1>
 
@@ -20,20 +21,16 @@
           </div>
 
           <div class="form-group">
-            <label>Your name</label>
-            <input class="form-control" type="text" name="name" v-model="name" required>
+            <label for="your-name">Your name</label>
+            <input class="form-control" id="your-name" type="text" v-model="name" required>
           </div>
 
-          <div class="form-group">
-            <label>Product name</label>
-            <input class="form-control" type="text" name="product" v-model="productName" required>
-          </div>
-
-          <button type="submit" class="btn btn-success">Save</button>
+          <button type="submit" class="btn btn-success">Greet</button>
         </form>
 
       </div>
     </transition>
+
   </div>
 </template>
 
@@ -41,14 +38,13 @@
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 
 export default {
-  name: 'quiz',
+  name: 'speech',
 
   data () {
     return {
       isLoading: true,
       name: '',
-      productName: '',
-      selectedVoice: null,
+      selectedVoice: 0,
       synth: window.speechSynthesis,
       voiceList: [],
       greetingSpeech: new window.SpeechSynthesisUtterance()
@@ -59,33 +55,43 @@ export default {
     PulseLoader
   },
 
-  created () {
+  mounted () {
     // wait for voices to load
     window.speechSynthesis.onvoiceschanged = () => {
       this.voiceList = this.synth.getVoices()
 
+      // give a bit of delay to show loading screen
+      // just for the sake of it, I suppose. Not the best reason
       setTimeout(() => {
         this.isLoading = false
       }, 800)
     }
+
+    this.listenForSpeechEvents()
   },
 
   methods: {
-    greet () {
-      this.isLoading = true
-
-      this.greetingSpeech.text = `
-        Hello, ${this.name}.
-        Your product name is ${this.productName}.
-      `
-
-      if (this.selectedVoice) {
-        this.greetingSpeech.voice = this.voiceList[this.selectedVoice]
+    /**
+     * React to speech events
+     */
+    listenForSpeechEvents () {
+      this.greetingSpeech.onstart = () => {
+        this.isLoading = true
       }
 
       this.greetingSpeech.onend = () => {
         this.isLoading = false
       }
+    },
+
+    /**
+     * Shout at the user
+     */
+    greet () {
+      // it should be 'craic', but it doesn't sound right
+      this.greetingSpeech.text = `Hello, ${this.name}. What's the crack?`
+
+      this.greetingSpeech.voice = this.voiceList[this.selectedVoice]
 
       this.synth.speak(this.greetingSpeech)
     }
