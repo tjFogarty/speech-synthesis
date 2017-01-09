@@ -57,9 +57,16 @@ export default {
 
   mounted () {
     // wait for voices to load
-    window.speechSynthesis.onvoiceschanged = () => {
-      this.voiceList = this.synth.getVoices()
+    // I can't get FF to work without calling this first
+    // Chrome works on the onvoiceschanged function
+    this.voiceList = this.synth.getVoices()
 
+    if (this.voiceList.length) {
+      this.isLoading = false
+    }
+
+    this.synth.onvoiceschanged = () => {
+      this.voiceList = this.synth.getVoices()
       // give a bit of delay to show loading screen
       // just for the sake of it, I suppose. Not the best reason
       setTimeout(() => {
